@@ -1,33 +1,28 @@
-name: Pages setup
+name: Pages status
 
-# Turns on GitHub Pages for this repository (deploy from the main branch, root)
-# and sets the custom domain from the CNAME file. Safe to run again.
+# Read-only check of the GitHub Pages site for this repository: whether it is
+# enabled, which domain it serves, build status and certificate state.
+# Enabling Pages itself needs a repository admin in Settings > Pages
+# (Source: Deploy from a branch, main, root); the CNAME file then sets the domain.
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths: [".github/workflows/pages.yml"]
 
 permissions:
   contents: read
-  pages: write
+  pages: read
 
 jobs:
-  enable:
+  status:
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       R: ${{ github.repository }}
     steps:
-      - uses: actions/checkout@v4
-      - name: Create the Pages site (deploy from main, root)
+      - name: Report
         run: |
-          if gh api "repos/$R/pages" >/dev/null 2>&1; then
-            echo "Pages already enabled"
+          if gh api "repos/$R/pages" > pages.json 2>/dev/null; then
+            node -pe 'const p=JSON.parse(require("fs").readFileSync("pages.json"));["url",p.html_url,"domain",p.cname,"status",p.status,"https_enforced",p.https_enforced,"cert",p.https_certificate&&p.https_certificate.state,"protected_domain",p.protected_domain_state].join(" | ")'
           else
-            gh api -X POST "repos/$R/pages" -f build_type=legacy -f 'source[branch]=main' -f 'source[path]=/'
+            echo "Pages is not enabled yet: Settings > Pages > Source: Deploy from a branch > main / (root) > Save"
+            exit 1
           fi
-      - name: Set the custom domain
-        run: |
-          gh api -X PUT "repos/$R/pages" -f cname="$(tr -d '\n' < CNAME)" -f build_type=legacy -f 'source[branch]=main' -f 'source[path]=/' || true
-          gh api "repos/$R/pages" | node -pe 'const p=JSON.parse(require("fs").readFileSync(0)); ["html_url",p.html_url,"cname",p.cname,"status",p.status,"https",p.https_enforced].join(" ")'

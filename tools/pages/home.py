@@ -1,35 +1,6 @@
-<!DOCTYPE html>
-<html lang="en-GB">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Norvex Property | Buy, let, sell, finance and survey</title>
-<meta name="description" content="Norvex Property is an estate agency for people who want one quiet, exact team: sales and lettings, whole-of-market mortgages, bridging finance and RICS surveys.">
-<link rel="canonical" href="https://norvexproperty.com/">
-<meta name="robots" content="index, follow, max-image-preview:large">
-<meta name="theme-color" content="#0B0C10">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="Norvex Property">
-<meta property="og:locale" content="en_GB">
-<meta property="og:url" content="https://norvexproperty.com/">
-<meta property="og:title" content="Norvex Property | Buy, let, sell, finance and survey">
-<meta property="og:description" content="Norvex Property is an estate agency for people who want one quiet, exact team: sales and lettings, whole-of-market mortgages, bridging finance and RICS surveys.">
-<meta property="og:image" content="https://norvexproperty.com/assets/manor-poster.jpg">
-<meta property="og:image:width" content="1920">
-<meta property="og:image:height" content="1080">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Norvex Property | Buy, let, sell, finance and survey">
-<meta name="twitter:description" content="Norvex Property is an estate agency for people who want one quiet, exact team: sales and lettings, whole-of-market mortgages, bridging finance and RICS surveys.">
-<meta name="twitter:image" content="https://norvexproperty.com/assets/manor-poster.jpg">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="icon" href="/favicon.ico" sizes="32x32">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="manifest" href="/site.webmanifest">
-<link rel="preload" href="/assets/fonts/cormorant-garamond.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/assets/fonts/montserrat.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/fonts.css">
-<link rel="stylesheet" href="/assets/site.css">
-<style>
+"""Home: the manor film with six chapters, then the working tools."""
+
+FILM_CSS = """
 .film{position:relative;height:1180vh;background:var(--ink)}
 .film__stage{position:sticky;top:0;height:100vh;height:100dvh;overflow:hidden;background:var(--ink)}
 .film__poster,.film__video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block}
@@ -67,96 +38,54 @@
   .chapters{position:relative}.chapter{position:relative;opacity:1;transform:none;pointer-events:auto;padding:40px var(--gutter)}
   .chapter__copy::before{display:none}.rail{position:relative;top:auto;right:auto;transform:none;flex-direction:row;flex-wrap:wrap;padding:12px var(--gutter)}
 }
-</style>
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"RealEstateAgent","@id":"https://norvexproperty.com/#org","name":"Norvex Property","legalName":"Norvex Property Ltd","url":"https://norvexproperty.com/","logo":"https://norvexproperty.com/icon-512.png","image":"https://norvexproperty.com/assets/manor-poster.jpg","email":"hello@norvexproperty.com","description":"Estate agency for sales, lettings, mortgages, bridging finance and RICS surveys.","areaServed":["London","Cotswolds","Surrey","Somerset","Buckinghamshire"],"address":{"@type":"PostalAddress","addressLocality":"London","addressCountry":"GB"}},{"@type":"WebSite","@id":"https://norvexproperty.com/#website","name":"Norvex Property","url":"https://norvexproperty.com/","publisher":{"@id":"https://norvexproperty.com/#org"}}]}</script>
-</head>
-<body class="is-home" data-email="hello@norvexproperty.com">
-<a class="skip" href="#main">Skip to content</a>
-<header class="hdr">
-  <div class="hdr__in">
-    <a class="brand" href="/"><i aria-hidden="true"></i>Norvex Property</a>
-    <nav aria-label="Primary"><ul class="nav">
-      <li data-menu data-open="false"><button class="nav__btn" type="button" aria-expanded="false" aria-haspopup="true">Services</button><ul class="nav__panel"><li><a href="/services/buy/">Buy<small>Search, viewings, offers and the path to completion.</small></a></li><li><a href="/services/sell/">Sell<small>Valuation, presentation, marketing and negotiation.</small></a></li><li><a href="/services/let/">Let<small>Lettings and management for landlords and tenants.</small></a></li><li><a href="/services/mortgages/">Mortgages<small>Whole-of-market advice and a decision in principle in days.</small></a></li><li><a href="/services/bridging/">Bridging finance<small>Short-term secured lending from £150,000.</small></a></li><li><a href="/services/surveying/">Surveying<small>RICS Level 2 and Level 3 surveys and defect reports.</small></a></li></ul></li>
-      <li><a href="/valuation/">Valuation</a></li><li><a href="/insights/">Insights</a></li><li><a href="/about/">About</a></li><li><a href="/contact/">Contact</a></li>
-    </ul></nav>
-    <div class="hdr__right">
-      <a class="cta-enquire-nav" href="/valuation/">Book a valuation</a>
-      <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="menu">Menu</button>
-    </div>
-  </div>
-</header>
-<div class="menu" id="menu" hidden>
-  <button class="menu__close" id="menu-close" type="button">Close</button>
-  <p class="menu__label">Services</p>
-  <ul class="menu__group"><li><a href="/services/buy/">Buy<small>Search, viewings, offers and the path to completion.</small></a></li><li><a href="/services/sell/">Sell<small>Valuation, presentation, marketing and negotiation.</small></a></li><li><a href="/services/let/">Let<small>Lettings and management for landlords and tenants.</small></a></li><li><a href="/services/mortgages/">Mortgages<small>Whole-of-market advice and a decision in principle in days.</small></a></li><li><a href="/services/bridging/">Bridging finance<small>Short-term secured lending from £150,000.</small></a></li><li><a href="/services/surveying/">Surveying<small>RICS Level 2 and Level 3 surveys and defect reports.</small></a></li></ul>
-  <p class="menu__label">Company</p>
-  <ul class="menu__group"><li><a href="/about/">About</a></li><li><a href="/valuation/">Book a valuation</a></li><li><a href="/insights/">Insights</a></li><li><a href="/careers/">Careers</a></li><li><a href="/contact/">Contact</a></li><li><a href="/legal/complaints/">Complaints</a></li></ul>
-  <p class="menu__label">Legal</p>
-  <ul class="menu__group"><li><a href="/legal/terms/">Terms and conditions</a></li><li><a href="/legal/privacy/">Privacy notice</a></li><li><a href="/legal/cookies/">Cookies</a></li><li><a href="/legal/fees/">Fees and client money</a></li><li><a href="/legal/accessibility/">Accessibility</a></li><li><a href="/legal/aml/">Identity and anti-money laundering checks</a></li></ul>
-</div>
-<main id="main" tabindex="-1">
+"""
 
-<section class="film" id="film" aria-label="The manor on the ridge">
+def chapter(i, cid, align, kicker, title, body, tags, actions, h1=False):
+    tag = "h1" if h1 else "h2"
+    tags_html = ("<ul class=\"tags\">" + "".join(f"<li>{t}</li>" for t in tags) + "</ul>") if tags else ""
+    return f'''<article class="chapter{" is-active" if i == 0 else ""}" id="{cid}" data-align="{align}">
+        <div class="chapter__copy">
+          <p class="kicker">{kicker}</p>
+          <{tag}>{title}</{tag}>
+          <p class="body">{body}</p>
+          {tags_html}
+          <div class="actions">{actions}</div>
+        </div>
+      </article>'''
+
+CHAPTERS = [
+    ("arrival", "left", "Norvex Property", "Arrive above the ridge.", "Buy, let, sell, finance and survey with one quiet, exact team.", [],
+     '<a class="cta-valuation" href="/valuation/">Book a valuation</a><a class="cta-tour" href="#properties" data-go="1">Begin the tour</a>'),
+    ("properties", "left", "Buy · Let · Sell", "Homes chosen the way we'd choose our own.", "Curated sales and lettings across London, the Cotswolds and the Home Counties.", ["Sales", "Lettings", "Valuations"],
+     '<a class="cta-valuation" href="/valuation/">Book a valuation</a><a class="cta-listings" href="#listings">View listings</a>'),
+    ("mortgages", "right", "Mortgages", "Finance that arrives before the keys do.", "Whole-of-market advice, rate comparison and a decision in principle in days.", ["Residential", "Buy-to-let", "Remortgage"],
+     '<a class="cta-advisor" href="/services/mortgages/">Talk to an advisor</a><a class="cta-rates" href="#calculators">Compare rates</a>'),
+    ("surveying", "left", "Surveying", "Know the building before you own it.", "RICS Level 2 and Level 3 surveys, defect analysis and structural reports.", ["Level 2", "Level 3", "Defect"],
+     '<a class="cta-survey" href="/services/surveying/">Get a survey quote</a><a class="cta-inspected" href="#surveys">See what\'s inspected</a>'),
+    ("bridging", "right", "Bridging Finance", "Liquidity for the gap between two doors.", "Short-term secured lending from £150,000, terms of 1 to 24 months.", ["From 0.55% pm", "Up to 75% LTV"],
+     '<a class="cta-facility" href="#bridging-calc">Check facility size</a>'),
+    ("contact", "left", "Contact", "Speak to an advisor today.", "Enquire and we reply within one working day.", [],
+     '<a class="cta-send" href="#enquire">Send enquiry</a>'),
+]
+
+CUR = ' aria-current="step"'
+RAIL = "".join(f'<button type="button" data-go="{i}"{CUR if i == 0 else ""}><span>{n}</span></button>' for i, n in enumerate(["Arrival", "Properties", "Mortgages", "Surveying", "Bridging", "Contact"]))
+
+FILM = f'''<section class="film" id="film" aria-label="The manor on the ridge">
   <div class="film__stage">
     <img class="film__poster" id="poster" alt="The glass and cedar manor on the ridge above Jackson at last light, the Teton range behind" src="/assets/manor-poster.jpg" width="1920" height="1080">
     <video class="film__video" id="video" muted playsinline preload="auto" aria-hidden="true"></video>
     <div class="film__scrim" aria-hidden="true"></div>
     <div class="film__progress" aria-hidden="true"><span id="progress"></span></div>
-    <nav class="rail" aria-label="Chapters"><button type="button" data-go="0" aria-current="step"><span>Arrival</span></button><button type="button" data-go="1"><span>Properties</span></button><button type="button" data-go="2"><span>Mortgages</span></button><button type="button" data-go="3"><span>Surveying</span></button><button type="button" data-go="4"><span>Bridging</span></button><button type="button" data-go="5"><span>Contact</span></button></nav>
+    <nav class="rail" aria-label="Chapters">{RAIL}</nav>
     <div class="chapters">
-      <article class="chapter is-active" id="arrival" data-align="left">
-        <div class="chapter__copy">
-          <p class="kicker">Norvex Property</p>
-          <h1>Arrive above the ridge.</h1>
-          <p class="body">Buy, let, sell, finance and survey with one quiet, exact team.</p>
-          
-          <div class="actions"><a class="cta-valuation" href="/valuation/">Book a valuation</a><a class="cta-tour" href="#properties" data-go="1">Begin the tour</a></div>
-        </div>
-      </article><article class="chapter" id="properties" data-align="left">
-        <div class="chapter__copy">
-          <p class="kicker">Buy · Let · Sell</p>
-          <h2>Homes chosen the way we'd choose our own.</h2>
-          <p class="body">Curated sales and lettings across London, the Cotswolds and the Home Counties.</p>
-          <ul class="tags"><li>Sales</li><li>Lettings</li><li>Valuations</li></ul>
-          <div class="actions"><a class="cta-valuation" href="/valuation/">Book a valuation</a><a class="cta-listings" href="#listings">View listings</a></div>
-        </div>
-      </article><article class="chapter" id="mortgages" data-align="right">
-        <div class="chapter__copy">
-          <p class="kicker">Mortgages</p>
-          <h2>Finance that arrives before the keys do.</h2>
-          <p class="body">Whole-of-market advice, rate comparison and a decision in principle in days.</p>
-          <ul class="tags"><li>Residential</li><li>Buy-to-let</li><li>Remortgage</li></ul>
-          <div class="actions"><a class="cta-advisor" href="/services/mortgages/">Talk to an advisor</a><a class="cta-rates" href="#calculators">Compare rates</a></div>
-        </div>
-      </article><article class="chapter" id="surveying" data-align="left">
-        <div class="chapter__copy">
-          <p class="kicker">Surveying</p>
-          <h2>Know the building before you own it.</h2>
-          <p class="body">RICS Level 2 and Level 3 surveys, defect analysis and structural reports.</p>
-          <ul class="tags"><li>Level 2</li><li>Level 3</li><li>Defect</li></ul>
-          <div class="actions"><a class="cta-survey" href="/services/surveying/">Get a survey quote</a><a class="cta-inspected" href="#surveys">See what's inspected</a></div>
-        </div>
-      </article><article class="chapter" id="bridging" data-align="right">
-        <div class="chapter__copy">
-          <p class="kicker">Bridging Finance</p>
-          <h2>Liquidity for the gap between two doors.</h2>
-          <p class="body">Short-term secured lending from £150,000, terms of 1 to 24 months.</p>
-          <ul class="tags"><li>From 0.55% pm</li><li>Up to 75% LTV</li></ul>
-          <div class="actions"><a class="cta-facility" href="#bridging-calc">Check facility size</a></div>
-        </div>
-      </article><article class="chapter" id="contact" data-align="left">
-        <div class="chapter__copy">
-          <p class="kicker">Contact</p>
-          <h2>Speak to an advisor today.</h2>
-          <p class="body">Enquire and we reply within one working day.</p>
-          
-          <div class="actions"><a class="cta-send" href="#enquire">Send enquiry</a></div>
-        </div>
-      </article>
+      {"".join(chapter(i, *c, h1=(i == 0)) for i, c in enumerate(CHAPTERS))}
     </div>
     <p class="film__hint" aria-hidden="true">Scroll to walk the house</p>
   </div>
-</section><section class="section" id="practices" aria-labelledby="practices-h"><div class="wrap">
+</section>'''
+
+PRACTICES = '''<section class="section" id="practices" aria-labelledby="practices-h"><div class="wrap">
   <div class="section__head"><p class="eyebrow">What we do</p><h2 class="h2" id="practices-h">Four practices. One team.</h2><p class="lead">Most moves need an agent, a broker and a surveyor, each with their own diary. Ours sit at the same table, so the survey shapes the offer and the finance is ready before the keys.</p></div>
   <ul class="grid grid--three">
     <li><a class="tile" href="/services/buy/"><span class="tile__k">Buy</span><h3>Find the right home, then the right price.</h3><p>Search, viewings, offers and the path to completion, with a surveyor's eye on every shortlist.</p><span class="link">Buying with Norvex</span></a></li>
@@ -166,7 +95,9 @@
     <li><a class="tile" href="/services/bridging/"><span class="tile__k">Bridging finance</span><h3>Short-term money, arranged fast.</h3><p>Chain breaks, auctions and refurbishments, from £150,000, terms of 1 to 24 months.</p><span class="link">Bridging finance</span></a></li>
     <li><a class="tile" href="/services/surveying/"><span class="tile__k">Surveying</span><h3>Know the building before you own it.</h3><p>RICS Level 2 and Level 3 surveys, single-issue defect reports and structural opinions.</p><span class="link">Surveys and reports</span></a></li>
   </ul>
-</div></section><section class="section section--tint" id="how" aria-labelledby="how-h"><div class="wrap">
+</div></section>'''
+
+HOW = '''<section class="section section--tint" id="how" aria-labelledby="how-h"><div class="wrap">
   <div class="section__head"><h2 class="h2" id="how-h">How a move runs with us</h2><p class="lead">One point of contact, one shared file, and every specialist briefed before you ask.</p></div>
   <ol class="steps">
     <li><h3>A conversation, not a pitch</h3><p>We start with what you want the move to achieve, the timing that suits you and the budget that is honest. Then we say what we would do.</p></li>
@@ -174,7 +105,9 @@
     <li><h3>Every specialist at the table</h3><p>Agent, broker and surveyor share one file. A survey finding changes the offer the same day; a lender's condition is answered the same day.</p></li>
     <li><h3>Completion, then quiet</h3><p>Keys, deposits, meter readings and the paperwork that follows a move, handled by us. Then we leave you alone until you need us.</p></li>
   </ol>
-</div></section><section class="section" id="listings" aria-labelledby="listings-h"><div class="wrap">
+</div></section>'''
+
+LISTINGS = '''<section class="section" id="listings" aria-labelledby="listings-h"><div class="wrap">
   <div class="section__head"><p class="eyebrow">Buy · Let · Sell</p><h2 class="h2" id="listings-h">Current instructions</h2><p class="lead">A short list, on purpose. Every home here has been walked by one of our partners before it was listed.</p></div>
   <div class="card search" id="search" role="search">
     <div class="seg" role="group" aria-label="I want to"><button type="button" data-intent="buy" aria-pressed="true">Buy</button><button type="button" data-intent="let" aria-pressed="false">Rent</button></div>
@@ -183,7 +116,9 @@
     <p class="search__status" id="search-status" aria-live="polite"></p>
   </div>
   <ul class="grid grid--listings" id="listing-grid"></ul>
-</div></section><section class="section section--tint" id="calculators" aria-labelledby="calc-h"><div class="wrap">
+</div></section>'''
+
+CALCULATORS = '''<section class="section section--tint" id="calculators" aria-labelledby="calc-h"><div class="wrap">
   <div class="section__head"><h2 class="h2" id="calc-h">Run the numbers before the viewing</h2><p class="lead">Indicative only. An advisor confirms the figures against your circumstances and the live market.</p></div>
   <div class="grid grid--two">
     <div class="card calc" id="mortgage-calc">
@@ -221,7 +156,9 @@
       <a class="cta-terms" href="/services/bridging/">Request terms</a>
     </div>
   </div>
-</div></section><section class="section" id="surveys" aria-labelledby="surveys-h"><div class="wrap">
+</div></section>'''
+
+SURVEYS = '''<section class="section" id="surveys" aria-labelledby="surveys-h"><div class="wrap">
   <div class="section__head"><h2 class="h2" id="surveys-h">Which survey, and what it actually inspects</h2><p class="lead">Choose a metric to compare the four reports, then pick one to see the room-by-room scope.</p></div>
   <div class="grid grid--two">
     <div class="card">
@@ -236,22 +173,11 @@
       <a class="cta-survey" href="/services/surveying/">Get a survey quote</a>
     </div>
   </div>
-</div></section><section class="section" id="insights-preview" aria-labelledby="insights-h"><div class="wrap">
-  <div class="section__head"><p class="eyebrow">Insights</p><h2 class="h2" id="insights-h">Plain guidance, written by the people who do the work</h2></div>
-  <ul class="grid grid--three">
-    <li><a class="post" href="/insights/level-3-survey-old-house/"><div class="post__media"><img src="/assets/img/still-door.jpg" alt="" loading="lazy" width="1920" height="1080"></div><div class="post__body"><span class="post__k">Surveying</span><h3>What a Level 3 survey finds in an older house</h3><p>Damp, movement, roof timbers and drains: the four places where the price of an older home is really decided.</p><time datetime="2026-09-10">10 September 2026</time></div></a></li>
-    <li><a class="post" href="/insights/bridging-finance-plain-guide/"><div class="post__media"><img src="/assets/img/still-living.jpg" alt="" loading="lazy" width="1920" height="1080"></div><div class="post__body"><span class="post__k">Finance</span><h3>Bridging finance, explained without the jargon</h3><p>When a bridge makes sense, what it really costs, and how the exit is agreed before a penny is lent.</p><time datetime="2026-09-03">3 September 2026</time></div></a></li>
-    <li><a class="post" href="/insights/pricing-a-home-to-sell/"><div class="post__media"><img src="/assets/img/still-orbit.jpg" alt="" loading="lazy" width="1920" height="1080"></div><div class="post__body"><span class="post__k">Selling</span><h3>Pricing a home to sell, not to sit</h3><p>Why the first fortnight decides the outcome, and how we set a guide price the evidence will support.</p><time datetime="2026-08-27">27 August 2026</time></div></a></li>
-  </ul>
-</div></section><section class="section section--tint" id="enquire" aria-labelledby="enquire-h"><div class="wrap">
-  <div class="grid grid--two grid--enquire">
-    <div>
-      <p class="eyebrow">Contact</p><h2 class="h2" id="enquire-h">Speak to an advisor</h2>
-      <p class="lead">One message reaches the right partner. We reply within one working day.</p>
-      <address class="address"><a href="mailto:hello@norvexproperty.com">hello@norvexproperty.com</a><span>Monday to Friday, 9am to 6pm. Saturday, 10am to 2pm.</span><span>London, United Kingdom</span></address>
-    </div>
-    <div data-form-slot>
-      <form class="card form" id="enquiry-form" data-form data-subject="Website enquiry" novalidate>
+</div></section>'''
+
+def enquiry_form(form_id="enquiry-form", subject="Website enquiry", intro=True):
+    return f'''<div data-form-slot>
+      <form class="card form" id="{form_id}" data-form data-subject="{subject}" novalidate>
         <div class="form__errors" tabindex="-1" role="alert" hidden><p>Please fix the following:</p><ul></ul></div>
         <div class="form__row">
           <div class="field"><label for="c-name">Full name</label><input id="c-name" name="name" type="text" autocomplete="name" required minlength="2" data-msg="Enter your full name"><p class="error" id="c-name-error" hidden></p></div>
@@ -267,29 +193,34 @@
         <button class="cta-send" type="submit">Send enquiry</button>
         <p class="form__fine">Your message goes straight to our team by email. We reply within one working day and never pass your details to third parties for marketing.</p>
       </form>
+    </div>'''
+
+ENQUIRE = f'''<section class="section section--tint" id="enquire" aria-labelledby="enquire-h"><div class="wrap">
+  <div class="grid grid--two grid--enquire">
+    <div>
+      <p class="eyebrow">Contact</p><h2 class="h2" id="enquire-h">Speak to an advisor</h2>
+      <p class="lead">One message reaches the right partner. We reply within one working day.</p>
+      <address class="address"><a href="mailto:hello@norvexproperty.com">hello@norvexproperty.com</a><span>Monday to Friday, 9am to 6pm. Saturday, 10am to 2pm.</span><span>London, United Kingdom</span></address>
     </div>
+    {enquiry_form()}
   </div>
-</div></section>
-</main>
-<footer class="ftr">
-  <div class="wrap">
-    <div class="ftr__grid">
-      <div>
-        <p class="brand" style="margin:0">Norvex Property</p>
-        <p class="ftr__tag">Buy. Let. Sell. Finance. Survey.</p>
-        <p class="ftr__blurb">Four practices under one roof: sales and lettings, mortgages, bridging finance and surveying. One quiet, exact team from first viewing to completion.</p>
-        <p class="ftr__blurb"><a href="mailto:hello@norvexproperty.com">hello@norvexproperty.com</a><br>Monday to Friday, 9am to 6pm. Saturday, 10am to 2pm.</p>
-      </div>
-      <div><h2>Services</h2><ul><li><a href="/services/buy/">Buy</a></li><li><a href="/services/sell/">Sell</a></li><li><a href="/services/let/">Let</a></li><li><a href="/services/mortgages/">Mortgages</a></li><li><a href="/services/bridging/">Bridging finance</a></li><li><a href="/services/surveying/">Surveying</a></li></ul></div>
-      <div><h2>Company</h2><ul><li><a href="/about/">About</a></li><li><a href="/valuation/">Book a valuation</a></li><li><a href="/insights/">Insights</a></li><li><a href="/careers/">Careers</a></li><li><a href="/contact/">Contact</a></li><li><a href="/legal/complaints/">Complaints</a></li></ul></div>
-      <div><h2>Legal</h2><ul><li><a href="/legal/terms/">Terms and conditions</a></li><li><a href="/legal/privacy/">Privacy notice</a></li><li><a href="/legal/cookies/">Cookies</a></li><li><a href="/legal/fees/">Fees and client money</a></li><li><a href="/legal/accessibility/">Accessibility</a></li><li><a href="/legal/aml/">Identity and anti-money laundering checks</a></li></ul></div>
-    </div>
-    <div class="ftr__bottom">
-      <p class="ftr__legal">Norvex Property is the trading name of Norvex Property Ltd, a company registered in England and Wales. Mortgage and bridging advice is provided by our FCA-authorised partners; Norvex Property introduces clients and does not itself give regulated financial advice. Your home may be repossessed if you do not keep up repayments on a mortgage or any other debt secured on it. Bridging loans are secured on property and carry higher interest than a standard mortgage. Figures shown on this website are indicative, not offers.</p>
-      <div class="ftr__meta"><span>&copy; <span data-year>2026</span> Norvex Property Ltd. All rights reserved.</span><a href="/legal/privacy/">Privacy</a><a href="/legal/cookies/">Cookies</a><a href="/legal/accessibility/">Accessibility</a><a href="/sitemap.xml">Sitemap</a></div>
-    </div>
-  </div>
-</footer>
-<script src="/assets/site.js" defer></script><script src="/assets/home.js" defer></script>
-</body>
-</html>
+</div></section>'''
+
+INSIGHTS = '''<section class="section" id="insights-preview" aria-labelledby="insights-h"><div class="wrap">
+  <div class="section__head"><p class="eyebrow">Insights</p><h2 class="h2" id="insights-h">Plain guidance, written by the people who do the work</h2></div>
+  <ul class="grid grid--three">
+    <li><a class="post" href="/insights/level-3-survey-old-house/"><div class="post__media"><img src="/assets/img/still-door.jpg" alt="" loading="lazy" width="1920" height="1080"></div><div class="post__body"><span class="post__k">Surveying</span><h3>What a Level 3 survey finds in an older house</h3><p>Damp, movement, roof timbers and drains: the four places where the price of an older home is really decided.</p><time datetime="2026-09-10">10 September 2026</time></div></a></li>
+    <li><a class="post" href="/insights/bridging-finance-plain-guide/"><div class="post__media"><img src="/assets/img/still-living.jpg" alt="" loading="lazy" width="1920" height="1080"></div><div class="post__body"><span class="post__k">Finance</span><h3>Bridging finance, explained without the jargon</h3><p>When a bridge makes sense, what it really costs, and how the exit is agreed before a penny is lent.</p><time datetime="2026-09-03">3 September 2026</time></div></a></li>
+    <li><a class="post" href="/insights/pricing-a-home-to-sell/"><div class="post__media"><img src="/assets/img/still-orbit.jpg" alt="" loading="lazy" width="1920" height="1080"></div><div class="post__body"><span class="post__k">Selling</span><h3>Pricing a home to sell, not to sit</h3><p>Why the first fortnight decides the outcome, and how we set a guide price the evidence will support.</p><time datetime="2026-08-27">27 August 2026</time></div></a></li>
+  </ul>
+</div></section>'''
+
+PAGES = [{
+    "path": "/",
+    "home": True,
+    "title": "Norvex Property",
+    "description": "Norvex Property is an estate agency for people who want one quiet, exact team: sales and lettings, whole-of-market mortgages, bridging finance and RICS surveys.",
+    "css": FILM_CSS,
+    "body": FILM + PRACTICES + HOW + LISTINGS + CALCULATORS + SURVEYS + INSIGHTS + ENQUIRE,
+    "priority": "1.0", "changefreq": "weekly",
+}]

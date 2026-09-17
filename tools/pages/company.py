@@ -39,7 +39,7 @@ CONTACT = f'''<section class="section" aria-labelledby="contact-h"><div class="w
       <h2 class="h2" id="contact-h">How to reach us</h2>
       <p class="lead">Email is fastest. Every message is read by a person and answered within one working day.</p>
       <address class="address">
-        <a href="mailto:hello@norvexproperty.com">hello@norvexproperty.com</a>
+        <a href="mailto:info@norvexproperty.com">info@norvexproperty.com</a>
         <span>Monday to Friday, 9am to 6pm. Saturday, 10am to 2pm.</span>
         <span>London, United Kingdom. Viewings and valuations by appointment across London, the Cotswolds, the Home Counties and the West Country.</span>
       </address>
@@ -105,7 +105,7 @@ CAREERS = '''<section class="section" aria-labelledby="careers-h"><div class="wr
       <li><strong>Client coordinators</strong> who hold the file, chase every party and answer within a working day.</li>
     </ul>
     <h2>How to apply</h2>
-    <p>There are no advertised vacancies at the moment. We read every speculative application and keep the good ones on file for six months. Send a short note about what you have done and what you want to do next, with a CV, to <a href="mailto:hello@norvexproperty.com?subject=Application">hello@norvexproperty.com</a> with "Application" in the subject line.</p>
+    <p>There are no advertised vacancies at the moment. We read every speculative application and keep the good ones on file for six months. Send a short note about what you have done and what you want to do next, with a CV, to <a href="mailto:info@norvexproperty.com?subject=Application">info@norvexproperty.com</a> with "Application" in the subject line.</p>
     <p class="callout">We are an equal opportunities employer. Applications are considered on merit and we make reasonable adjustments for candidates who need them at any stage.</p>
   </div>
 </div></section>'''
@@ -218,7 +218,7 @@ PAGES = [
     {"path": "/about/", "title": "About Norvex Property", "description": "Norvex Property puts sales and lettings, mortgages, bridging finance and surveying at one table, with one point of contact from first viewing to completion.",
      "hero": {"eyebrow": "About", "h1": "One table. Four practices. Your move.", "lead": "Sales and lettings, mortgages, bridging finance and surveying, run as one project with one person you can always reach.", "image": "/assets/img/still-aerial.jpg", "pos": "50% 60%"},
      "crumbs": [("/about/", "About")], "og_image": "/assets/img/still-aerial.jpg", "body": ABOUT, "priority": "0.8"},
-    {"path": "/contact/", "title": "Contact", "description": "Contact Norvex Property. Email hello@norvexproperty.com or use the form; every message is answered by a person within one working day.",
+    {"path": "/contact/", "title": "Contact", "description": "Contact Norvex Property. Email info@norvexproperty.com or use the form; every message is answered by a person within one working day.",
      "hero": {"eyebrow": "Contact", "h1": "Speak to an advisor.", "lead": "Every message is read by a person and answered within one working day.", "image": "/assets/img/still-view.jpg", "pos": "50% 45%", "short": True},
      "crumbs": [("/contact/", "Contact")], "og_image": "/assets/img/still-view.jpg", "body": CONTACT, "priority": "0.8"},
     {"path": "/valuation/", "title": "Book a valuation", "description": "Book a free, no-obligation valuation with Norvex Property. A written guide price with the comparable evidence within 48 hours of the visit.",

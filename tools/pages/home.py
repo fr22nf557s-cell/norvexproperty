@@ -200,7 +200,7 @@ ENQUIRE = f'''<section class="section section--tint" id="enquire" aria-labelledb
     <div>
       <p class="eyebrow">Contact</p><h2 class="h2" id="enquire-h">Speak to an advisor</h2>
       <p class="lead">One message reaches the right partner. We reply within one working day.</p>
-      <address class="address"><a href="mailto:hello@norvexproperty.com">hello@norvexproperty.com</a><span>Monday to Friday, 9am to 6pm. Saturday, 10am to 2pm.</span><span>London, United Kingdom</span></address>
+      <address class="address"><a href="mailto:info@norvexproperty.com">info@norvexproperty.com</a><span>Monday to Friday, 9am to 6pm. Saturday, 10am to 2pm.</span><span>London, United Kingdom</span></address>
     </div>
     {enquiry_form()}
   </div>

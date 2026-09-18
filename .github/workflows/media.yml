@@ -95,17 +95,20 @@ jobs:
           common="-an -c:v libx264 -preset slow -pix_fmt yuv420p -profile:v high \
             -sc_threshold 0 -x264-params aq-mode=3:aq-strength=1.1 \
             -color_primaries bt709 -color_trc bt709 -colorspace bt709 -movflags +faststart"
-          enc () { # enc <filter> <crf> <gop> <out>
+          # The level is declared rather than left for x264 to infer, so a phone
+          # reads a figure its hardware decoder is certain to accept instead of
+          # falling back to software for a file that never needed the headroom.
+          enc () { # enc <filter> <crf> <gop> <level> <out>
             ffmpeg -v error -y -i master.mp4 -vf "$1,setsar=1" -crf "$2" -g "$3" -keyint_min "$3" \
-              $common "$4"
+              -level:v "$4" $common "$5"
           }
           # A hero nobody waits for is not a hero: these land near 6 Mbps, which
           # a 4K-sourced downscale carries without visible artefacts.
-          enc "scale=2560:1440:flags=lanczos" 25 24 assets/manor-1440.mp4
-          enc "scale=1920:1080:flags=lanczos" 24 24 assets/manor.mp4
-          enc "scale=1280:720:flags=lanczos"  25 12 assets/manor-mobile.mp4
-          enc "crop=1216:2160:1312:0,scale=1080:1920:flags=lanczos" 25 12 assets/manor-portrait.mp4
-          enc "crop=1216:2160:1312:0,scale=720:1280:flags=lanczos"  27 12 assets/manor-portrait-sm.mp4
+          enc "scale=2560:1440:flags=lanczos" 25 24 5.1 assets/manor-1440.mp4
+          enc "scale=1920:1080:flags=lanczos" 24 24 4.0 assets/manor.mp4
+          enc "scale=1280:720:flags=lanczos"  25 12 3.1 assets/manor-mobile.mp4
+          enc "crop=1216:2160:1312:0,scale=1080:1920:flags=lanczos" 25 12 4.0 assets/manor-portrait.mp4
+          enc "crop=1216:2160:1312:0,scale=720:1280:flags=lanczos"  27 12 3.1 assets/manor-portrait-sm.mp4
           for f in assets/*.mp4; do
             printf "%s  " "$f"
             ffprobe -v error -select_streams v:0 -show_entries stream=width,height \

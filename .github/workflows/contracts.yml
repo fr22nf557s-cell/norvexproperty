@@ -1,0 +1,179 @@
+name: Harvest construction contracts
+
+# Pulls a year of UK public sector contract notices from Contracts Finder's
+# bulk daily feed, keeps the construction and building ones worth £1m or more,
+# and puts the result on the data/contracts branch. Nothing here touches the
+# website: the branch is never served, main is never written to.
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "How many days back to harvest"
+        type: string
+        default: "365"
+      min_value:
+        description: "Minimum contract value in pounds"
+        type: string
+        default: "1000000"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: contracts
+  cancel-in-progress: false
+
+jobs:
+  harvest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main }
+
+      - name: Harvest
+        env:
+          DAYS: ${{ inputs.days }}
+          MIN_VALUE: ${{ inputs.min_value }}
+        run: |
+          set -euo pipefail
+          cat > harvest.py <<'PY'
+          import csv, datetime, io, json, os, re, sys, time, urllib.request, urllib.error
+          from concurrent.futures import ThreadPoolExecutor
+
+          csv.field_size_limit(10_000_000)
+          UA = {"Accept": "text/csv", "User-Agent": "norvex-contract-research/1.0 (+norvexproperty.com)"}
+          TODAY = datetime.date.today()
+          DAYS = int(os.environ.get("DAYS") or 365)
+          MIN_VALUE = float(os.environ.get("MIN_VALUE") or 1_000_000)
+
+          # Construction is mostly CPV 45 (works) and 71 (architecture, engineering,
+          # surveying). The word list catches the notices filed under something else
+          # that are plainly building work, without dragging in supply contracts.
+          BUILD = re.compile(r"\b(construction|refurbish\w*|demolition|new build|newbuild|roofing|"
+                             r"cladding|groundworks?|civil engineering|fit[- ]out|structural|retrofit|"
+                             r"decarbonisation|planned works|major works|building works|reroofing|"
+                             r"window replacement|external wall|housing development|regeneration|"
+                             r"highway|drainage|bridge|extension)\b", re.I)
+
+          def fetch(d):
+              url = ("https://www.contractsfinder.service.gov.uk/Harvester/Notices/Data/CSV/"
+                     f"{d.year}/{d.month:02d}/{d.day:02d}")
+              for attempt in range(5):
+                  try:
+                      with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=90) as r:
+                          return r.read().decode("utf-8-sig", errors="replace")
+                  except urllib.error.HTTPError as e:
+                      if e.code == 429:
+                          time.sleep(int(e.headers.get("Retry-After") or 0) or 15 * (attempt + 1))
+                          continue
+                      return ""
+                  except Exception:
+                      time.sleep(3 * (attempt + 1))
+              print("gave up on", d, flush=True)
+              return ""
+
+          def g(row, key):
+              return (row.get(key) or "").strip()
+
+          def many(row, pat, n=8):
+              return [v for v in (g(row, pat.format(i=i)) for i in range(n)) if v]
+
+          def parse(text):
+              rows, scanned = [], 0
+              if not text.strip():
+                  return rows, scanned
+              for row in csv.DictReader(io.StringIO(text)):
+                  scanned += 1
+                  p = "releases/0/"
+                  cpvs = [g(row, p + "tender/classification/id")] + many(row, p + "tender/additionalClassifications/{i}/id")
+                  cpvs = [c for c in cpvs if c]
+                  cat = g(row, p + "tender/mainProcurementCategory")
+                  title, desc = g(row, p + "tender/title"), g(row, p + "tender/description")
+                  if not (any(c.startswith(("45", "71")) for c in cpvs) or cat == "works"
+                          or (cat != "goods" and BUILD.search(title + " " + desc))):
+                      continue
+                  def num(k):
+                      try:
+                          return float(g(row, k).replace(",", ""))
+                      except ValueError:
+                          return 0.0
+                  value = max(num(p + "tender/value/amount"), num(p + "awards/0/value/amount"))
+                  if value < MIN_VALUE:
+                      continue
+                  rows.append({
+                      "stage": g(row, p + "tag/0"),
+                      "status": g(row, p + "tender/status"),
+                      "title": title[:250],
+                      "description": desc[:600],
+                      "buyer": g(row, p + "buyer/name")[:140],
+                      "value": round(value),
+                      "currency": g(row, p + "tender/value/currency") or g(row, p + "awards/0/value/currency") or "GBP",
+                      "deadline": g(row, p + "tender/tenderPeriod/endDate")[:10],
+                      "published": g(row, p + "tender/datePublished")[:10] or g(row, p + "date")[:10],
+                      "award_date": g(row, p + "awards/0/date")[:10],
+                      "supplier": "; ".join(many(row, p + "awards/0/suppliers/{i}/name", 5))[:200],
+                      "cpv": " ".join(cpvs[:5]),
+                      "cpv_desc": g(row, p + "tender/classification/description")[:90],
+                      "category": cat,
+                      "procedure": (g(row, p + "tender/procurementMethodDetails")
+                                    or g(row, p + "tender/procurementMethod"))[:60],
+                      "start": (g(row, p + "tender/contractPeriod/startDate")[:10]
+                                or g(row, p + "awards/0/contractPeriod/startDate")[:10]),
+                      "end": (g(row, p + "tender/contractPeriod/endDate")[:10]
+                              or g(row, p + "awards/0/contractPeriod/endDate")[:10]),
+                      "region": "; ".join(dict.fromkeys(many(row, p + "tender/items/0/deliveryAddresses/{i}/region", 15)))[:120],
+                      "postcode": g(row, p + "tender/items/0/deliveryAddresses/0/postalCode")[:12],
+                      "sme_suitable": g(row, p + "tender/suitability/sme"),
+                      "buyer_contact": g(row, p + "parties/0/contactPoint/email")[:80],
+                      "ocid": g(row, p + "ocid"),
+                      "link": g(row, "uri").replace("/Published/Notice/releases/", "/Notice/"),
+                  })
+              return rows, scanned
+
+          days = [TODAY - datetime.timedelta(days=i) for i in range(DAYS + 1)]
+          rows, scanned = [], 0
+          with ThreadPoolExecutor(max_workers=8) as ex:
+              for got, n in ex.map(lambda d: parse(fetch(d)), days):
+                  rows.extend(got)
+                  scanned += n
+          print(f"scanned {scanned} notices over {len(days)} days, matched {len(rows)}", flush=True)
+
+          best = {}
+          for r in rows:
+              key = r["ocid"] or (r["title"], r["buyer"])
+              rank = (r["published"], r["stage"] == "award")
+              if key not in best or rank >= best[key][0]:
+                  best[key] = (rank, r)
+          uniq = sorted((v[1] for v in best.values()), key=lambda r: -r["value"])
+          COLS = ["stage","status","title","description","buyer","value","currency","deadline","published",
+                  "award_date","supplier","cpv","cpv_desc","category","procedure","start","end","region",
+                  "postcode","sme_suitable","buyer_contact","ocid","link"]
+          with open("contracts.tsv", "w", newline="", encoding="utf-8") as f:
+              w = csv.DictWriter(f, COLS, delimiter="\t", extrasaction="ignore")
+              w.writeheader()
+              w.writerows(uniq)
+          meta = {
+              "generated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
+              "source": "Contracts Finder bulk daily CSV feed (OCDS), Crown Copyright, Open Government Licence v3",
+              "days": DAYS, "window_from": days[-1].isoformat(), "window_to": days[0].isoformat(),
+              "min_value": MIN_VALUE, "notices_scanned": scanned, "rows": len(uniq),
+          }
+          open("contracts-meta.json", "w").write(json.dumps(meta, indent=1))
+          print(json.dumps(meta), flush=True)
+          PY
+          python3 harvest.py
+          wc -l contracts.tsv
+
+      - name: Put it on the data branch
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan data-contracts
+          git rm -rq --cached . || true
+          find . -maxdepth 1 -mindepth 1 ! -name .git ! -name contracts.tsv ! -name contracts-meta.json -exec rm -rf {} +
+          git add contracts.tsv contracts-meta.json
+          git commit -m "Construction contracts harvested from Contracts Finder" \
+            -m "Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>" \
+            -m "Claude-Session: https://claude.ai/code/session_01Sx8sA7aUCePdYuBjwL9dLy"
+          git push -f origin HEAD:data/contracts

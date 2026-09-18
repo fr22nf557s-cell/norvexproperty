@@ -92,8 +92,10 @@ def build(path, force=False):
 
     dst = os.path.join(OUT, f"{name}.jpg")
     if force or not os.path.exists(dst):
+        # Only browsers without <picture> or AVIF and WebP ever fetch this, plus
+        # the social preview, so it does not need the 4:4:4 treatment.
         resize(master, min(jpeg_width, master.width)).save(
-            dst, "JPEG", quality=86, optimize=True, progressive=True, subsampling=0)
+            dst, "JPEG", quality=82, optimize=True, progressive=True)
         made.append(os.path.basename(dst))
 
     return name, {"w": master.width, "h": master.height, **sizes}, made

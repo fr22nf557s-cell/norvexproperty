@@ -240,8 +240,15 @@ def check(pages):
             elif frag:
                 tp = base if base.endswith("/") else None
                 if tp and tp in ids and frag not in ids[tp]: problems.append(f"{path}: missing fragment {u}")
-    for path in ("/404.html",):
-        pass
+        # Every candidate in a srcset has to exist too: the ladder is generated
+        # from a manifest, so a stale entry would otherwise ship a broken image.
+        for m in re.finditer(r'srcset="([^"]+)"', t):
+            for cand in m.group(1).split(","):
+                u = cand.strip().split(" ")[0]
+                if not u or u.startswith(("http", "data:")):
+                    continue
+                if not (ROOT / u.lstrip("/")).exists():
+                    problems.append(f"{path}: missing srcset file {u}")
     if problems:
         print("\n".join(problems)); sys.exit(1)
     print(f"checked {len(docs)} pages: links, fragments, ids, copy OK")

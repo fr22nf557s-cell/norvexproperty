@@ -11,6 +11,12 @@ import html, importlib, json, os, re, sys, datetime, pathlib
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
 from img import picture, CARD_SIZES, FULL_SIZES, HERO_SIZES, STAGE_SIZES  # noqa: E402
+
+MARK = (ROOT / "tools" / "mark.svg").read_text().strip()
+
+def mark(cls="brand__mark"):
+    return (f'<svg class="{cls}" viewBox="0 0 64 64" width="26" height="26" '
+            f'aria-hidden="true" focusable="false">{MARK}</svg>')
 SITE = json.loads((ROOT / "tools" / "site.json").read_text())
 TODAY = datetime.date.today().isoformat()
 
@@ -83,7 +89,7 @@ def header(p):
     return f'''<a class="skip" href="#main">Skip to content</a>
 <header class="hdr{solid}">
   <div class="hdr__in">
-    <a class="brand" href="/"><i aria-hidden="true"></i>{e(SITE["name"])}</a>
+    <a class="brand" href="/">{mark()}<span>{e(SITE["name"])}</span></a>
     <nav aria-label="Primary"><ul class="nav">
       <li data-menu data-open="false"><button class="nav__btn" type="button" aria-expanded="false" aria-haspopup="true"{cur_attr(True, services_open)}>Services</button><ul class="nav__panel">{svc}</ul></li>
       {nav_item("/valuation/", "Valuation", cur)}{nav_item("/insights/", "Insights", cur)}{nav_item("/about/", "About", cur)}{nav_item("/contact/", "Contact", cur)}
@@ -95,6 +101,7 @@ def header(p):
   </div>
 </header>
 <div class="menu" id="menu" hidden>
+  <a class="brand menu__brand" href="/">{mark()}<span>{e(SITE["name"])}</span></a>
   <button class="menu__close" id="menu-close" type="button">Close</button>
   <p class="menu__label">Services</p>
   <ul class="menu__group">{"".join(f'<li><a href="{h}">{e(n)}<small>{e(d)}</small></a></li>' for h, n, d in SERVICES)}</ul>
@@ -121,7 +128,7 @@ def footer():
   <div class="wrap">
     <div class="ftr__grid">
       <div>
-        <p class="brand" style="margin:0">{e(SITE["name"])}</p>
+        <p class="brand" style="margin:0">{mark()}<span>{e(SITE["name"])}</span></p>
         <p class="ftr__tag">Buy. Let. Sell. Finance. Survey.</p>
         <p class="ftr__blurb">Four practices under one roof: sales and lettings, mortgages, bridging finance and surveying. One quiet, exact team from first viewing to completion.</p>
         <p class="ftr__blurb">{contact}<br>{e(SITE["opening_hours"])}</p>
@@ -165,6 +172,7 @@ def render(p):
 </head>
 <body{body_class} data-email="{e(SITE["email"])}">
 {header(p)}
+<div class="brand brand--print" aria-hidden="true">{mark()}<span>{e(SITE["name"])}</span><small>{e(SITE["domain"].replace("https://", ""))}</small></div>
 <main id="main" tabindex="-1">
 {hero(p)}
 {p["body"]}

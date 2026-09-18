@@ -16,6 +16,24 @@ rules after building. Page content lives in `tools/pages/`; company details
 (email, phone, company number, registered office, redress and client money
 schemes) live in `tools/site.json` and flow into the footer and legal pages.
 
+## The mark
+
+The N in the lozenge is not a lookalike: `tools/logo.py` lifts the outline
+straight out of the Cormorant Garamond file the site already serves, so the
+mark and the wordmark are the same cut of type. It writes every SVG the site
+uses, including `tools/mark.svg`, the fragment the page builder inlines into
+the header, the footer, the menu and the printed letterhead, coloured by the
+stylesheet rather than by hardcoded fills.
+
+    python3 tools/logo.py           # redraw the SVGs (needs fonttools)
+    node tools/rasterise.mjs        # render the PNG icons (needs Playwright)
+    python3 tools/logo.py --ico     # pack favicon.ico at 16, 32 and 48
+    python3 tools/logo.py --check   # fail if a committed SVG is out of date
+
+There are two weights of one drawing: the line mark everywhere above 20px, and
+a filled lozenge with the N knocked out for the browser tab, where a hairline
+would disappear.
+
 ## Photography and the film
 
 Everything visual comes from one 4K master of the film. `tools/media.py` cuts

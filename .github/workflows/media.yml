@@ -10,6 +10,18 @@ on:
         description: "URL of the 4K film master (mp4)"
         required: true
         type: string
+      do_images:
+        description: "Rebuild the image ladders"
+        type: boolean
+        default: true
+      do_videos:
+        description: "Re-encode the film"
+        type: boolean
+        default: true
+      compare:
+        description: "Write tools/_compare.jpg, old delivery against new master"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -43,6 +55,7 @@ jobs:
           [ "$W" -ge 3840 ] || { echo "master is only ${W}px wide, expected 3840"; exit 1; }
 
       - name: Cut the still masters
+        if: ${{ inputs.do_images }}
         run: |
           set -euo pipefail
           mkdir -p assets/master
@@ -65,17 +78,20 @@ jobs:
           ls -la assets/master
 
       - name: Build the image ladders
+        if: ${{ inputs.do_images }}
         run: |
           set -euo pipefail
           python3 tools/media.py --force
           du -sh assets/img
 
       - name: Encode the film
+        if: ${{ inputs.do_videos }}
         run: |
           set -euo pipefail
-          # Common settings: no audio, bt709 tagged, dense keyframes so the
-          # scroll scrub lands on a frame quickly, and aq-mode 3 because most of
-          # this film is shot at dusk and flat dark areas are where H.264 smears.
+          # Common settings: no audio, bt709 tagged, a keyframe every second so
+          # the scroll scrub lands on a frame quickly without paying for an
+          # I-frame three times a second, and aq-mode 3 because most of this
+          # film is shot at dusk and flat dark areas are where H.264 smears.
           common="-an -c:v libx264 -preset slow -pix_fmt yuv420p -profile:v high \
             -sc_threshold 0 -x264-params aq-mode=3:aq-strength=1.1 \
             -color_primaries bt709 -color_trc bt709 -colorspace bt709 -movflags +faststart"
@@ -83,11 +99,13 @@ jobs:
             ffmpeg -v error -y -i master.mp4 -vf "$1,setsar=1" -crf "$2" -g "$3" -keyint_min "$3" \
               $common "$4"
           }
-          enc "scale=2560:1440:flags=lanczos" 21 12 assets/manor-1440.mp4
-          enc "scale=1920:1080:flags=lanczos" 20 12 assets/manor.mp4
-          enc "scale=1280:720:flags=lanczos"  22  8 assets/manor-mobile.mp4
-          enc "crop=1216:2160:1312:0,scale=1080:1920:flags=lanczos" 22 8 assets/manor-portrait.mp4
-          enc "crop=1216:2160:1312:0,scale=720:1280:flags=lanczos"  24 8 assets/manor-portrait-sm.mp4
+          # A hero nobody waits for is not a hero: these land near 6 Mbps, which
+          # a 4K-sourced downscale carries without visible artefacts.
+          enc "scale=2560:1440:flags=lanczos" 25 24 assets/manor-1440.mp4
+          enc "scale=1920:1080:flags=lanczos" 24 24 assets/manor.mp4
+          enc "scale=1280:720:flags=lanczos"  25 12 assets/manor-mobile.mp4
+          enc "crop=1216:2160:1312:0,scale=1080:1920:flags=lanczos" 25 12 assets/manor-portrait.mp4
+          enc "crop=1216:2160:1312:0,scale=720:1280:flags=lanczos"  27 12 assets/manor-portrait-sm.mp4
           for f in assets/*.mp4; do
             printf "%s  " "$f"
             ffprobe -v error -select_streams v:0 -show_entries stream=width,height \
@@ -96,6 +114,7 @@ jobs:
           done
 
       - name: Old against new, for review
+        if: ${{ inputs.compare }}
         run: |
           set -euo pipefail
           curl -fsSL https://norvexproperty.com/assets/manor.mp4 -o old.mp4 || true

@@ -5,9 +5,11 @@
      stage crops to cover: on an upright phone a landscape file would be blown
      up by three and look it. */
   var FILM = {
+    ultra: '/assets/manor-2160.mp4',
     wide: '/assets/manor-1440.mp4',
     desktop: '/assets/manor.mp4',
     compact: '/assets/manor-mobile.mp4',
+    portraitHd: '/assets/manor-portrait-hd.mp4',
     portrait: '/assets/manor-portrait.mp4',
     portraitSmall: '/assets/manor-portrait-sm.mp4'
   };
@@ -34,13 +36,21 @@
       var net = c.effectiveType || '';
       var thin = c.saveData === true || net === '2g' || net === 'slow-2g';
       var modest = thin || net === '3g';
-      if (touch && innerHeight > innerWidth) return thin ? FILM.portraitSmall : FILM.portrait;
+      var dpr = Math.min(devicePixelRatio || 1, 3);
+      if (touch && innerHeight > innerWidth) {
+        if (thin) return FILM.portraitSmall;
+        /* An upright phone crops to its own width, so that is what it needs. */
+        return innerWidth * dpr > 1100 && !modest ? FILM.portraitHd : FILM.portrait;
+      }
       if (thin) return FILM.compact;
       /* Cover-fit means the axis that crops decides how many pixels are used. */
-      var dpr = Math.min(devicePixelRatio || 1, 2);
-      var need = Math.max(innerWidth, innerHeight * 16 / 9) * dpr;
+      var need = Math.max(innerWidth, innerHeight * 16 / 9) * Math.min(dpr, 2);
       if (touch) return need > 1700 && !modest ? FILM.desktop : FILM.compact;
       if (modest) return FILM.compact;
+      /* The 4K file is four times the weight of the 1080p one, so it goes only
+         to a screen that can actually show it, over a connection that can carry
+         it without the scrub starving. */
+      if (need >= 3000 && (net === '4g' || net === '')) return FILM.ultra;
       return need >= 2200 ? FILM.wide : need >= 1500 ? FILM.desktop : FILM.compact;
     };
     var duration = CUTS[CUTS.length - 1], active = -1, target = 0, current = 0, dirty = true, painted = false;

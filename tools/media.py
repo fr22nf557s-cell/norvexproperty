@@ -38,11 +38,13 @@ PORTRAIT_JPEG = 1080
 # Smaller sizes get a touch more quality: they are cheap and they are what
 # most phones actually download.
 def avif_quality(w):
-    return 72 if w <= 640 else 68 if w <= 1280 else 63 if w <= 1920 else 58
+    # Raised across the ladder: these are the stills people look at while they
+    # read, and AVIF is cheap enough that shaving them was a false economy.
+    return 78 if w <= 640 else 74 if w <= 1280 else 70 if w <= 1920 else 66
 
 
 def webp_quality(w):
-    return 86 if w <= 640 else 82 if w <= 1280 else 78
+    return 88 if w <= 640 else 85 if w <= 1280 else 80
 
 
 def resize(im, w):
@@ -78,7 +80,7 @@ def build(path, force=False):
         sizes["avif"].append(w)
         if force or not os.path.exists(dst):
             resize(master, w).save(dst, "AVIF", quality=avif_quality(w), speed=4,
-                                   subsampling="4:2:0" if w > 1280 else "4:4:4")
+                                   subsampling="4:2:0" if w > 1920 else "4:4:4")
             made.append(os.path.basename(dst))
 
     for w in webp_widths:

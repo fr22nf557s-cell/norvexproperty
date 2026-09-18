@@ -106,13 +106,18 @@ jobs:
             ffmpeg -v error -y -i master.mp4 -vf "$1,setsar=1" -crf "$2" -g "$3" -keyint_min "$3" \
               -level:v "$4" $common "$5"
           }
-          # A hero nobody waits for is not a hero: these land near 6 Mbps, which
-          # a 4K-sourced downscale carries without visible artefacts.
-          enc "scale=2560:1440:flags=lanczos" 25 24 5.1 assets/manor-1440.mp4
-          enc "scale=1920:1080:flags=lanczos" 24 24 4.0 assets/manor.mp4
-          enc "scale=1280:720:flags=lanczos"  25 12 3.1 assets/manor-mobile.mp4
-          enc "crop=1216:2160:1312:0,scale=1080:1920:flags=lanczos" 25 12 4.0 assets/manor-portrait.mp4
-          enc "crop=1216:2160:1312:0,scale=720:1280:flags=lanczos"  27 12 3.1 assets/manor-portrait-sm.mp4
+          # A 1440p encode at crf 21 and the same frame at crf 25 were not
+          # tellable apart, so extra bitrate at a given size buys nothing here.
+          # Resolution does: the top file exists so a 4K panel and a retina
+          # laptop are handed real pixels, and the 9:16 cut now has an HD step
+          # for phones with a 3x screen.
+          enc "scale=3840:2160:flags=lanczos" 26 24 5.2 assets/manor-2160.mp4
+          enc "scale=2560:1440:flags=lanczos" 24 24 5.1 assets/manor-1440.mp4
+          enc "scale=1920:1080:flags=lanczos" 23 24 4.0 assets/manor.mp4
+          enc "scale=1280:720:flags=lanczos"  24 12 3.1 assets/manor-mobile.mp4
+          enc "crop=1216:2160:1312:0,scale=1440:2560:flags=lanczos" 25 12 5.1 assets/manor-portrait-hd.mp4
+          enc "crop=1216:2160:1312:0,scale=1080:1920:flags=lanczos" 24 12 4.0 assets/manor-portrait.mp4
+          enc "crop=1216:2160:1312:0,scale=720:1280:flags=lanczos"  26 12 3.1 assets/manor-portrait-sm.mp4
           for f in assets/*.mp4; do
             printf "%s  " "$f"
             ffprobe -v error -select_streams v:0 -show_entries stream=width,height \
@@ -157,7 +162,7 @@ jobs:
           git add -A
           git diff --cached --stat | tail -5
           git commit -m "Media: rebuild every image and video from the 4K master" \
-            -m "Stills are cut at 3840x2160 and delivered as AVIF and WebP ladders; the film is re-encoded at 1440p, 1080p, 720p and in a 9:16 cut for phones." \
+            -m "Stills are cut at 3840x2160 and delivered as AVIF and WebP ladders; the film is re-encoded at 2160p, 1440p, 1080p and 720p, with three 9:16 cuts for phones." \
             -m "Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>" \
             -m "Claude-Session: https://claude.ai/code/session_01Sx8sA7aUCePdYuBjwL9dLy" \
             || { echo "nothing to commit"; exit 0; }

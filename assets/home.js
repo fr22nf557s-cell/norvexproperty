@@ -1,7 +1,16 @@
 /* Norvex Property home: the manor film scrubbed by scroll, plus the working tools. */
 (function () {
   'use strict';
-  var MEDIA = { desktop: '/assets/manor.mp4', mobile: '/assets/manor-mobile.mp4', poster: '/assets/manor-poster.jpg', mobilePoster: '/assets/manor-mobile-poster.jpg' };
+  /* The film is encoded at several sizes, including a 9:16 cut, because the
+     stage crops to cover: on an upright phone a landscape file would be blown
+     up by three and look it. */
+  var FILM = {
+    wide: '/assets/manor-1440.mp4',
+    desktop: '/assets/manor.mp4',
+    compact: '/assets/manor-mobile.mp4',
+    portrait: '/assets/manor-portrait.mp4',
+    portraitSmall: '/assets/manor-portrait-sm.mp4'
+  };
   var CUTS = [0, 4, 10, 15, 20, 22.5, 24.042];
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
@@ -15,11 +24,22 @@
   /* ---------- the film ---------- */
   var film = $('#film');
   if (film) {
-    var video = $('#video'), poster = $('#poster'), bar = $('#progress');
+    var video = $('#video'), bar = $('#progress');
     var chapters = $$('.chapter', film), rail = $$('.rail button', film);
     var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
     var mobile = matchMedia('(max-width: 860px), (hover: none) and (pointer: coarse)').matches;
-    poster.src = mobile ? MEDIA.mobilePoster : MEDIA.poster;
+    var touch = matchMedia('(hover: none) and (pointer: coarse)').matches;
+    var pickFilm = function () {
+      var c = navigator.connection || {};
+      var thin = c.saveData === true || /(^|\s)(slow-2g|2g)$/.test(c.effectiveType || '');
+      if (touch && innerHeight > innerWidth) return thin ? FILM.portraitSmall : FILM.portrait;
+      if (thin) return FILM.compact;
+      /* Cover-fit means the axis that crops decides how many pixels are used. */
+      var dpr = Math.min(devicePixelRatio || 1, 2);
+      var need = Math.max(innerWidth, innerHeight * 16 / 9) * dpr;
+      if (touch) return need > 1700 ? FILM.desktop : FILM.compact;
+      return need >= 2200 ? FILM.wide : need >= 1500 ? FILM.desktop : FILM.compact;
+    };
     var duration = CUTS[CUTS.length - 1], active = -1, target = 0, current = 0, dirty = true, painted = false;
     var setActive = function (p) {
       var t = p * duration, i = 0;
@@ -34,7 +54,23 @@
     rail.forEach(function (b) { b.addEventListener('click', function () { goTo(Number(b.dataset.go)); }); });
     $$('[data-go].cta-tour').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); goTo(Number(a.dataset.go)); }); });
     if (!reduce) {
-      video.src = mobile ? MEDIA.mobile : MEDIA.desktop;
+      var chosen = '';
+      var loadFilm = function () {
+        var want = pickFilm();
+        if (want === chosen) return;
+        var at = chosen ? video.currentTime : 0;
+        chosen = want;
+        painted = false;
+        film.classList.remove('is-painted');
+        video.src = want;
+        video.addEventListener('loadedmetadata', function once() {
+          video.removeEventListener('loadedmetadata', once);
+          if (at) { try { video.currentTime = at; } catch (e) {} }
+        });
+      };
+      loadFilm();
+      /* Turning the phone changes which cut fits; keep the place in the film. */
+      addEventListener('orientationchange', function () { setTimeout(loadFilm, 250); });
       video.addEventListener('loadedmetadata', function () { if (video.duration) duration = video.duration; dirty = true; });
       video.addEventListener('seeked', function () { if (!painted) { painted = true; film.classList.add('is-painted'); } });
       var prime = function () { video.play().then(function () { video.pause(); }).catch(function () {}); };

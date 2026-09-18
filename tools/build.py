@@ -9,6 +9,8 @@ Page modules live in tools/pages/. Each exposes PAGES, a list of dicts.
 import html, importlib, json, os, re, sys, datetime, pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / "tools"))
+from img import picture, CARD_SIZES, FULL_SIZES, HERO_SIZES, STAGE_SIZES  # noqa: E402
 SITE = json.loads((ROOT / "tools" / "site.json").read_text())
 TODAY = datetime.date.today().isoformat()
 
@@ -31,7 +33,7 @@ def jsonld(obj):
 
 def org():
     o = {"@type": "RealEstateAgent", "@id": SITE["domain"] + "/#org", "name": SITE["name"], "legalName": SITE["legal_name"], "url": SITE["domain"] + "/",
-         "logo": SITE["domain"] + "/icon-512.png", "image": SITE["domain"] + "/assets/manor-poster.jpg", "email": SITE["email"],
+         "logo": SITE["domain"] + "/icon-512.png", "image": SITE["domain"] + "/assets/img/manor-poster.jpg", "email": SITE["email"],
          "description": "Estate agency for sales, lettings, mortgages, bridging finance and RICS surveys.",
          "areaServed": ["London", "Cotswolds", "Surrey", "Somerset", "Buckinghamshire"], "address": {"@type": "PostalAddress", "addressLocality": "London", "addressCountry": "GB"}}
     if SITE.get("phone"): o["telephone"] = SITE["phone"]
@@ -41,7 +43,7 @@ def org():
 
 def head(p):
     url = SITE["domain"] + p["path"]
-    og = SITE["domain"] + p.get("og_image", "/assets/manor-poster.jpg")
+    og = SITE["domain"] + p.get("og_image", "/assets/img/manor-poster.jpg")
     title = p["title"] if p.get("title_raw") else (p["title"] + " | " + SITE["name"] if p["path"] != "/" else SITE["name"] + " | Buy, let, sell, finance and survey")
     robots = "noindex, nofollow" if p.get("noindex") else "index, follow, max-image-preview:large"
     parts = [
@@ -135,6 +137,7 @@ def footer():
   </div>
 </footer>'''
 
+
 def hero(p):
     h = p.get("hero")
     if not h: return ""
@@ -148,7 +151,7 @@ def hero(p):
     lead = f'<p class="lead">{h["lead"]}</p>' if h.get("lead") else ""
     actions = f'<div class="band__actions" style="margin-top:28px">{h["actions"]}</div>' if h.get("actions") else ""
     return f'''<section class="phero{short}" style="--pos:{pos}">
-  <img class="phero__img" src="{img}" alt="" width="1920" height="1080" fetchpriority="high">
+  {picture(img, HERO_SIZES, cls="phero__img", pic_cls="phero__pic", eager=True)}
   <div class="phero__in">{crumbs}<p class="eyebrow">{e(h["eyebrow"])}</p><h1 class="h1">{h["h1"]}</h1>{lead}{actions}</div>
 </section>'''
 

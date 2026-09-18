@@ -1,12 +1,14 @@
 """Home: the manor film with six chapters, then the working tools."""
+from img import picture, CARD_SIZES, STAGE_SIZES, UPRIGHT_MEDIA
 
 FILM_CSS = """
 .film{position:relative;height:1180vh;background:var(--ink)}
 .film__stage{position:sticky;top:0;height:100vh;height:100dvh;overflow:hidden;background:var(--ink)}
+.film__posterwrap{position:absolute;inset:0;display:block}
 .film__poster,.film__video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block}
 .film__video{z-index:1;opacity:0;transition:opacity .4s}
 .film.is-painted .film__video{opacity:1}
-.film__scrim{position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(to bottom,rgba(11,12,16,.78),rgba(11,12,16,0) 160px),linear-gradient(to top,rgba(11,12,16,.82) 0%,rgba(11,12,16,.35) 38%,rgba(11,12,16,0) 62%),linear-gradient(to right,rgba(11,12,16,.45),rgba(11,12,16,0) 55%)}
+.film__scrim{position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(to bottom,rgba(11,12,16,.66),rgba(11,12,16,0) 150px),linear-gradient(to top,rgba(11,12,16,.72) 0%,rgba(11,12,16,.3) 30%,rgba(11,12,16,0) 58%),linear-gradient(to right,rgba(11,12,16,.32) 0%,rgba(11,12,16,.1) 34%,rgba(11,12,16,0) 60%)}
 .film__progress{position:absolute;z-index:6;top:var(--nav-h);left:0;right:0;height:2px;background:rgba(243,238,228,.12)}
 .film__progress span{display:block;height:100%;width:100%;background:var(--champagne);transform:scaleX(0);transform-origin:left center}
 .rail{position:absolute;z-index:6;right:var(--gutter);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:6px}
@@ -34,7 +36,7 @@ FILM_CSS = """
 .film.is-scrolled .film__hint{opacity:0;transition:opacity .4s}
 @media (prefers-reduced-motion:reduce){
   .film{height:auto}.film__stage{position:relative;height:auto;overflow:visible}
-  .film__poster{position:relative;height:56vh}.film__video,.film__scrim,.film__progress,.film__hint{display:none}
+  .film__posterwrap{position:relative;display:block;height:56vh}.film__poster{position:relative;height:100%}.film__video,.film__scrim,.film__progress,.film__hint{display:none}
   .chapters{position:relative}.chapter{position:relative;opacity:1;transform:none;pointer-events:auto;padding:40px var(--gutter)}
   .chapter__copy::before{display:none}.rail{position:relative;top:auto;right:auto;transform:none;flex-direction:row;flex-wrap:wrap;padding:12px var(--gutter)}
 }
@@ -73,7 +75,7 @@ RAIL = "".join(f'<button type="button" data-go="{i}"{CUR if i == 0 else ""}><spa
 
 FILM = f'''<section class="film" id="film" aria-label="The manor on the ridge">
   <div class="film__stage">
-    <img class="film__poster" id="poster" alt="The glass and cedar manor on the ridge above Jackson at last light, the Teton range behind" src="/assets/manor-poster.jpg" width="1920" height="1080">
+    {picture("/assets/img/manor-poster.jpg", STAGE_SIZES, alt="The glass and cedar manor on the ridge above Jackson at last light, the Teton range behind", cls="film__poster", pic_cls="film__posterwrap", eager=True, extra=' id="poster"', art=[(UPRIGHT_MEDIA, "manor-poster-portrait", "100vw")])}
     <video class="film__video" id="video" muted playsinline preload="auto" aria-hidden="true"></video>
     <div class="film__scrim" aria-hidden="true"></div>
     <div class="film__progress" aria-hidden="true"><span id="progress"></span></div>
@@ -206,12 +208,12 @@ ENQUIRE = f'''<section class="section section--tint" id="enquire" aria-labelledb
   </div>
 </div></section>'''
 
-INSIGHTS = '''<section class="section" id="insights-preview" aria-labelledby="insights-h"><div class="wrap">
+INSIGHTS = f'''<section class="section" id="insights-preview" aria-labelledby="insights-h"><div class="wrap">
   <div class="section__head"><p class="eyebrow">Insights</p><h2 class="h2" id="insights-h">Plain guidance, written by the people who do the work</h2></div>
   <ul class="grid grid--three">
-    <li><a class="post" href="/insights/level-3-survey-old-house/"><div class="post__media"><img src="/assets/img/still-door.jpg" alt="" loading="lazy" width="1920" height="1080"></div><div class="post__body"><span class="post__k">Surveying</span><h3>What a Level 3 survey finds in an older house</h3><p>Damp, movement, roof timbers and drains: the four places where the price of an older home is really decided.</p><time datetime="2026-09-10">10 September 2026</time></div></a></li>
-    <li><a class="post" href="/insights/bridging-finance-plain-guide/"><div class="post__media"><img src="/assets/img/still-living.jpg" alt="" loading="lazy" width="1920" height="1080"></div><div class="post__body"><span class="post__k">Finance</span><h3>Bridging finance, explained without the jargon</h3><p>When a bridge makes sense, what it really costs, and how the exit is agreed before a penny is lent.</p><time datetime="2026-09-03">3 September 2026</time></div></a></li>
-    <li><a class="post" href="/insights/pricing-a-home-to-sell/"><div class="post__media"><img src="/assets/img/still-orbit.jpg" alt="" loading="lazy" width="1920" height="1080"></div><div class="post__body"><span class="post__k">Selling</span><h3>Pricing a home to sell, not to sit</h3><p>Why the first fortnight decides the outcome, and how we set a guide price the evidence will support.</p><time datetime="2026-08-27">27 August 2026</time></div></a></li>
+    <li><a class="post" href="/insights/level-3-survey-old-house/"><div class="post__media">{picture("/assets/img/still-door.jpg", CARD_SIZES)}</div><div class="post__body"><span class="post__k">Surveying</span><h3>What a Level 3 survey finds in an older house</h3><p>Damp, movement, roof timbers and drains: the four places where the price of an older home is really decided.</p><time datetime="2026-09-10">10 September 2026</time></div></a></li>
+    <li><a class="post" href="/insights/bridging-finance-plain-guide/"><div class="post__media">{picture("/assets/img/still-living.jpg", CARD_SIZES)}</div><div class="post__body"><span class="post__k">Finance</span><h3>Bridging finance, explained without the jargon</h3><p>When a bridge makes sense, what it really costs, and how the exit is agreed before a penny is lent.</p><time datetime="2026-09-03">3 September 2026</time></div></a></li>
+    <li><a class="post" href="/insights/pricing-a-home-to-sell/"><div class="post__media">{picture("/assets/img/still-orbit.jpg", CARD_SIZES)}</div><div class="post__body"><span class="post__k">Selling</span><h3>Pricing a home to sell, not to sit</h3><p>Why the first fortnight decides the outcome, and how we set a guide price the evidence will support.</p><time datetime="2026-08-27">27 August 2026</time></div></a></li>
   </ul>
 </div></section>'''
 

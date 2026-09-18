@@ -1,0 +1,127 @@
+name: Build media
+
+# Rebuilds every image and video the site serves from one high-resolution
+# master, then rebuilds the pages so their srcset ladders match what exists.
+# Run it by hand from the Actions tab with the master's URL.
+on:
+  workflow_dispatch:
+    inputs:
+      master_url:
+        description: "URL of the 4K film master (mp4)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: media
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main }
+
+      - name: Install ffmpeg and Pillow
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          python3 -m pip install --quiet --upgrade "pillow>=11.3"
+          python3 -c "from PIL import features; assert features.check('avif'), 'Pillow has no AVIF support'; assert features.check('webp'); print('Pillow AVIF + WebP ready')"
+
+      - name: Fetch the master
+        run: |
+          set -euo pipefail
+          curl -fsSL "${{ inputs.master_url }}" -o master.mp4
+          ffprobe -v error -show_entries stream=width,height,codec_name,nb_frames \
+            -show_entries format=duration,size -of default=nw=1 master.mp4
+          W=$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of csv=p=0 master.mp4)
+          [ "$W" -ge 3840 ] || { echo "master is only ${W}px wide, expected 3840"; exit 1; }
+
+      - name: Cut the still masters
+        run: |
+          set -euo pipefail
+          mkdir -p assets/master
+          # Frame numbers matched against the stills the site already serves, so
+          # the pages keep exactly the images people have been seeing.
+          ffmpeg -v error -i master.mp4 \
+            -vf "select='eq(n\,1)+eq(n\,60)+eq(n\,204)+eq(n\,324)+eq(n\,396)+eq(n\,468)+eq(n\,557)'" \
+            -vsync 0 -frames:v 7 frame-%02d.png
+          mv frame-01.png assets/master/manor-poster.png
+          mv frame-02.png assets/master/still-aerial.png
+          mv frame-03.png assets/master/still-orbit.png
+          mv frame-04.png assets/master/still-approach.png
+          mv frame-05.png assets/master/still-door.png
+          mv frame-06.png assets/master/still-living.png
+          mv frame-07.png assets/master/still-view.png
+          # A 9:16 cut of the opening frame for phones held upright, so the
+          # poster is real pixels there instead of a blown-up crop.
+          ffmpeg -v error -i master.mp4 -vf "select='eq(n\,1)',crop=1216:2160:1312:0" \
+            -vsync 0 -frames:v 1 assets/master/manor-poster-portrait.png
+          ls -la assets/master
+
+      - name: Build the image ladders
+        run: |
+          set -euo pipefail
+          python3 tools/media.py --force
+          du -sh assets/img
+
+      - name: Encode the film
+        run: |
+          set -euo pipefail
+          # Common settings: no audio, bt709 tagged, dense keyframes so the
+          # scroll scrub lands on a frame quickly, and aq-mode 3 because most of
+          # this film is shot at dusk and flat dark areas are where H.264 smears.
+          common="-an -c:v libx264 -preset slow -pix_fmt yuv420p -profile:v high \
+            -sc_threshold 0 -x264-params aq-mode=3:aq-strength=1.1 \
+            -color_primaries bt709 -color_trc bt709 -colorspace bt709 -movflags +faststart"
+          enc () { # enc <filter> <crf> <gop> <out>
+            ffmpeg -v error -y -i master.mp4 -vf "$1,setsar=1" -crf "$2" -g "$3" -keyint_min "$3" \
+              $common "$4"
+          }
+          enc "scale=2560:1440:flags=lanczos" 21 12 assets/manor-1440.mp4
+          enc "scale=1920:1080:flags=lanczos" 20 12 assets/manor.mp4
+          enc "scale=1280:720:flags=lanczos"  22  8 assets/manor-mobile.mp4
+          enc "crop=1216:2160:1312:0,scale=1080:1920:flags=lanczos" 22 8 assets/manor-portrait.mp4
+          enc "crop=1216:2160:1312:0,scale=720:1280:flags=lanczos"  24 8 assets/manor-portrait-sm.mp4
+          for f in assets/*.mp4; do
+            printf "%s  " "$f"
+            ffprobe -v error -select_streams v:0 -show_entries stream=width,height \
+              -show_entries format=size,bit_rate -of csv=p=0 "$f" | tr '\n' ' '
+            echo
+          done
+
+      - name: Old against new, for review
+        run: |
+          set -euo pipefail
+          curl -fsSL https://norvexproperty.com/assets/manor.mp4 -o old.mp4 || true
+          if [ -f old.mp4 ]; then
+            ffmpeg -v error -i old.mp4 -vf "select='eq(n\,468)',crop=640:540:640:270,scale=1280:1080:flags=neighbor,drawtext=text='before':x=24:y=24:fontsize=48:fontcolor=white" -vsync 0 -frames:v 1 a.png
+            ffmpeg -v error -i master.mp4 -vf "select='eq(n\,468)',crop=1280:1080:1280:540,drawtext=text='after':x=24:y=24:fontsize=48:fontcolor=white" -vsync 0 -frames:v 1 b.png
+            ffmpeg -v error -i a.png -i b.png -lavfi hstack -frames:v 1 -q:v 3 tools/_compare.jpg
+            ls -la tools/_compare.jpg
+          fi
+
+      - name: Rebuild the pages against the new manifest
+        run: |
+          set -euo pipefail
+          rm -rf assets/master master.mp4 old.mp4 a.png b.png
+          python3 tools/build.py --check
+
+      - name: Commit
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --stat | tail -5
+          git commit -m "Media: rebuild every image and video from the 4K master" \
+            -m "Stills are cut at 3840x2160 and delivered as AVIF and WebP ladders; the film is re-encoded at 1440p, 1080p, 720p and in a 9:16 cut for phones." \
+            -m "Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>" \
+            -m "Claude-Session: https://claude.ai/code/session_01Sx8sA7aUCePdYuBjwL9dLy" \
+            || { echo "nothing to commit"; exit 0; }
+          git push origin HEAD:main

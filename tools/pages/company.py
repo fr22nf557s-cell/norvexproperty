@@ -1,4 +1,5 @@
 """About, contact, valuation, careers, insights and the 404 page."""
+from img import picture, CARD_SIZES
 from pages.home import enquiry_form
 
 ABOUT = '''<section class="section" aria-labelledby="about-h"><div class="wrap">
@@ -198,7 +199,7 @@ def article_page(a):
 
 INSIGHTS_INDEX = '''<section class="section" aria-label="Articles"><div class="wrap">
   <ul class="grid grid--three">''' + "".join(f'''
-    <li><a class="post" href="/insights/{a["slug"]}/"><div class="post__media"><img src="{a["image"]}" alt="" loading="lazy" width="1920" height="1080"></div><div class="post__body"><span class="post__k">{a["cat"]}</span><h2 style="margin:0;font-family:var(--display);font-weight:600;font-size:26px;line-height:1.08">{a["title"]}</h2><p>{a["summary"]}</p><time datetime="{a["date"]}">{a["date_h"]}</time></div></a></li>''' for a in ARTICLES) + '''
+    <li><a class="post" href="/insights/{a["slug"]}/"><div class="post__media">{picture(a["image"], CARD_SIZES)}</div><div class="post__body"><span class="post__k">{a["cat"]}</span><h2 style="margin:0;font-family:var(--display);font-weight:600;font-size:26px;line-height:1.08">{a["title"]}</h2><p>{a["summary"]}</p><time datetime="{a["date"]}">{a["date_h"]}</time></div></a></li>''' for a in ARTICLES) + '''
   </ul>
 </div></section>
 <section class="section section--tint"><div class="wrap">

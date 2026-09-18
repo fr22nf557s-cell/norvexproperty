@@ -22,6 +22,10 @@ on:
         description: "Write tools/_compare.jpg, old delivery against new master"
         type: boolean
         default: false
+      compare_url:
+        description: "A second master to compare against, instead of the live film"
+        type: string
+        default: ""
 
 permissions:
   contents: write
@@ -120,13 +124,24 @@ jobs:
         if: ${{ inputs.compare }}
         run: |
           set -euo pipefail
-          curl -fsSL https://norvexproperty.com/assets/manor.mp4 -o old.mp4 || true
-          if [ -f old.mp4 ]; then
-            ffmpeg -v error -i old.mp4 -vf "select='eq(n\,468)',crop=640:540:640:270,scale=1280:1080:flags=neighbor,drawtext=text='before':x=24:y=24:fontsize=48:fontcolor=white" -vsync 0 -frames:v 1 a.png
-            ffmpeg -v error -i master.mp4 -vf "select='eq(n\,468)',crop=1280:1080:1280:540,drawtext=text='after':x=24:y=24:fontsize=48:fontcolor=white" -vsync 0 -frames:v 1 b.png
-            ffmpeg -v error -i a.png -i b.png -lavfi hstack -frames:v 1 -q:v 3 tools/_compare.jpg
-            ls -la tools/_compare.jpg
+          # With a second master URL the strip compares the two masters at 100%;
+          # otherwise it compares what the site serves today against this master.
+          crop () { # crop <file> <label> <out>
+            ffmpeg -v error -y -i "$1" -vf "select='eq(n\,468)',crop=1280:1080:1280:540,drawtext=text='$2':x=24:y=24:fontsize=48:fontcolor=white" -vsync 0 -frames:v 1 "$3"
+          }
+          if [ -n "${{ inputs.compare_url }}" ]; then
+            curl -fsSL "${{ inputs.compare_url }}" -o other.mp4
+            ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 other.mp4
+            crop master.mp4 "master A" a.png
+            crop other.mp4 "master B" b.png
+          else
+            curl -fsSL https://norvexproperty.com/assets/manor.mp4 -o old.mp4 || true
+            [ -f old.mp4 ] || exit 0
+            ffmpeg -v error -y -i old.mp4 -vf "select='eq(n\,468)',crop=640:540:640:270,scale=1280:1080:flags=neighbor,drawtext=text='before':x=24:y=24:fontsize=48:fontcolor=white" -vsync 0 -frames:v 1 a.png
+            crop master.mp4 "after" b.png
           fi
+          ffmpeg -v error -y -i a.png -i b.png -lavfi hstack -frames:v 1 -q:v 3 tools/_compare.jpg
+          ls -la tools/_compare.jpg
 
       - name: Rebuild the pages against the new manifest
         run: |

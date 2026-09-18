@@ -45,7 +45,7 @@
       if (thin) return FILM.compact;
       /* Cover-fit means the axis that crops decides how many pixels are used. */
       var need = Math.max(innerWidth, innerHeight * 16 / 9) * Math.min(dpr, 2);
-      if (touch) return need > 1700 && !modest ? FILM.desktop : FILM.compact;
+      if (touch) return need >= 1500 && !modest ? FILM.desktop : FILM.compact;
       if (modest) return FILM.compact;
       /* The 4K file is four times the weight of the 1080p one, so it goes only
          to a screen that can actually show it, over a connection that can carry

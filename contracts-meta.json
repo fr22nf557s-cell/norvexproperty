@@ -1,0 +1,10 @@
+{
+ "generated": "2026-09-18T20:00:12+00:00",
+ "source": "Contracts Finder bulk daily CSV feed (OCDS), Crown Copyright, Open Government Licence v3",
+ "days": 365,
+ "window_from": "2025-09-18",
+ "window_to": "2026-09-18",
+ "min_value": 1000000.0,
+ "notices_scanned": 39140,
+ "rows": 2054
+}

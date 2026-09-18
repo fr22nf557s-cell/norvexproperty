@@ -31,13 +31,16 @@
     var touch = matchMedia('(hover: none) and (pointer: coarse)').matches;
     var pickFilm = function () {
       var c = navigator.connection || {};
-      var thin = c.saveData === true || /(^|\s)(slow-2g|2g)$/.test(c.effectiveType || '');
+      var net = c.effectiveType || '';
+      var thin = c.saveData === true || net === '2g' || net === 'slow-2g';
+      var modest = thin || net === '3g';
       if (touch && innerHeight > innerWidth) return thin ? FILM.portraitSmall : FILM.portrait;
       if (thin) return FILM.compact;
       /* Cover-fit means the axis that crops decides how many pixels are used. */
       var dpr = Math.min(devicePixelRatio || 1, 2);
       var need = Math.max(innerWidth, innerHeight * 16 / 9) * dpr;
-      if (touch) return need > 1700 ? FILM.desktop : FILM.compact;
+      if (touch) return need > 1700 && !modest ? FILM.desktop : FILM.compact;
+      if (modest) return FILM.compact;
       return need >= 2200 ? FILM.wide : need >= 1500 ? FILM.desktop : FILM.compact;
     };
     var duration = CUTS[CUTS.length - 1], active = -1, target = 0, current = 0, dirty = true, painted = false;

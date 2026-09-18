@@ -146,7 +146,7 @@ jobs:
       - name: Rebuild the pages against the new manifest
         run: |
           set -euo pipefail
-          rm -rf assets/master master.mp4 old.mp4 a.png b.png
+          rm -rf assets/master master.mp4 old.mp4 other.mp4 a.png b.png
           python3 tools/build.py --check
 
       - name: Commit

@@ -1,4 +1,5 @@
 """About, contact, valuation, careers, insights and the 404 page."""
+from cfg import SITE, wa_href
 from img import picture, CARD_SIZES
 from pages.home import enquiry_form
 
@@ -34,6 +35,17 @@ ABOUT = '''<section class="section" aria-labelledby="about-h"><div class="wrap">
   <div class="band"><div><h2>Talk to us about your move.</h2><p>One conversation, one point of contact, a reply within one working day.</p></div><div class="band__actions"><a class="btn-gold" href="/valuation/">Book a valuation</a><a class="btn-ghost" href="/contact/">Contact us</a></div></div>
 </div></section>'''
 
+
+def wa_contact_line():
+    """A WhatsApp line on the contact page, only when a number is configured."""
+    href = wa_href("Hello Norvex Property, I have an enquiry.")
+    if not href:
+        return ""
+    shown = SITE.get("whatsapp_display") or "WhatsApp"
+    return (f'<a href="{href}" target="_blank" rel="noopener">WhatsApp {shown}</a>'
+            '<span>Message us and the same team answers, usually within the hour.</span>')
+
+
 CONTACT = f'''<section class="section" aria-labelledby="contact-h"><div class="wrap">
   <div class="grid grid--two grid--enquire">
     <div>
@@ -41,6 +53,7 @@ CONTACT = f'''<section class="section" aria-labelledby="contact-h"><div class="w
       <p class="lead">Email is fastest. Every message is read by a person and answered within one working day.</p>
       <address class="address">
         <a href="mailto:info@norvexproperty.com">info@norvexproperty.com</a>
+        {wa_contact_line()}
         <span>Monday to Friday, 9am to 6pm. Saturday, 10am to 2pm.</span>
         <span>London, United Kingdom. Viewings and valuations by appointment across London, the Cotswolds, the Home Counties and the West Country.</span>
       </address>

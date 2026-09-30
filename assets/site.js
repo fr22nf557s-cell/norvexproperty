@@ -134,4 +134,52 @@
         .catch(function () { clearTimeout(timer); fallback(); });
     });
   });
+
+  /* ---------- WhatsApp corner ---------- */
+  var wa = d.getElementById('wa');
+  if (wa) {
+    var waFab = d.getElementById('wa-fab');
+    var waPanel = d.getElementById('wa-panel');
+    var waClose = d.getElementById('wa-close');
+    var waGo = d.getElementById('wa-go');
+    var number = wa.dataset.wa;
+    /* The recipient gets the page the enquiry came from, which saves a round
+       trip asking which property or service someone means. */
+    var context = function () {
+      var title = (d.title || '').split('|')[0].trim();
+      var where = location.host + location.pathname;
+      return title ? '\n\n(About: ' + title + ' - ' + where + ')' : '\n\n(' + where + ')';
+    };
+    var link = function (message) {
+      var text = message ? message + context() : '';
+      return 'https://wa.me/' + number + (text ? '?text=' + encodeURIComponent(text) : '');
+    };
+    var open = function (yes) {
+      wa.classList.toggle('is-open', yes);
+      waPanel.hidden = !yes;
+      waFab.setAttribute('aria-expanded', yes ? 'true' : 'false');
+      if (yes) {
+        var first = waPanel.querySelector('.wa__opts button');
+        if (first) first.focus();
+      }
+    };
+    waFab.addEventListener('click', function () { open(waPanel.hidden); });
+    waClose.addEventListener('click', function () { open(false); waFab.focus(); });
+    d.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Escape' && !waPanel.hidden) { open(false); waFab.focus(); }
+    });
+    d.addEventListener('click', function (ev) {
+      if (!waPanel.hidden && !wa.contains(ev.target)) open(false);
+    });
+    waGo.addEventListener('click', function () {
+      waGo.href = link('Hello Norvex Property, I have an enquiry.');
+    });
+    $$('.wa__opts button', waPanel).forEach(function (b) {
+      b.addEventListener('click', function () {
+        window.open(link(b.dataset.msg), '_blank', 'noopener');
+        open(false);
+      });
+    });
+  }
+
 })();

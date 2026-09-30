@@ -5,6 +5,9 @@
   "email": "info@norvexproperty.com",
   "phone": "",
   "phone_href": "",
+  "whatsapp": "",
+  "whatsapp_display": "",
+  "whatsapp_hours": "Monday to Saturday, 9am to 7pm",
   "address_lines": [
     "London, United Kingdom"
   ],

@@ -6,7 +6,7 @@
 
 Page modules live in tools/pages/. Each exposes PAGES, a list of dicts.
 """
-import html, importlib, json, os, re, sys, datetime, pathlib
+import html, importlib, json, os, re, sys, datetime, pathlib, urllib.parse
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
@@ -17,7 +17,7 @@ MARK = (ROOT / "tools" / "mark.svg").read_text().strip()
 def mark(cls="brand__mark"):
     return (f'<svg class="{cls}" viewBox="0 0 64 64" width="26" height="26" '
             f'aria-hidden="true" focusable="false">{MARK}</svg>')
-SITE = json.loads((ROOT / "tools" / "site.json").read_text())
+from cfg import SITE, wa_href, wa_number  # noqa: E402
 TODAY = datetime.date.today().isoformat()
 
 SERVICES = [
@@ -123,6 +123,9 @@ def footer():
     lines.append(SITE.get("fca_statement") or "Mortgage and bridging advice is provided by our FCA-authorised partners; Norvex Property introduces clients and does not itself give regulated financial advice.")
     lines.append("Your home may be repossessed if you do not keep up repayments on a mortgage or any other debt secured on it. Bridging loans are secured on property and carry higher interest than a standard mortgage. Figures shown on this website are indicative, not offers.")
     contact = f'<a href="mailto:{e(SITE["email"])}">{e(SITE["email"])}</a>'
+    if wa_href():
+        shown = SITE.get("whatsapp_display") or "WhatsApp"
+        contact += f'<br><a href="{wa_href("Hello Norvex Property, I have an enquiry.")}" target="_blank" rel="noopener">WhatsApp {e(shown)}</a>'
     if SITE.get("phone"): contact += f' · <a href="{e(SITE["phone_href"] or "tel:" + SITE["phone"])}">{e(SITE["phone"])}</a>'
     return f'''<footer class="ftr">
   <div class="wrap">
@@ -162,6 +165,47 @@ def hero(p):
   <div class="phero__in">{crumbs}<p class="eyebrow">{e(h["eyebrow"])}</p><h1 class="h1">{h["h1"]}</h1>{lead}{actions}</div>
 </section>'''
 
+# The WhatsApp corner. It only exists when a number is configured, so the site
+# never ships a button that opens a chat with nobody.
+WA_GLYPH = ('<svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true" focusable="false">'
+            '<path fill="currentColor" d="M16.04 3.2A12.74 12.74 0 0 0 3.3 15.94c0 2.25.59 4.44 1.71 6.38L3.2 28.8l6.63-1.74a12.68 12.68 0 0 0 6.2 1.58h.01c7.02 0 12.74-5.72 12.74-12.74A12.66 12.66 0 0 0 16.04 3.2Zm0 23.24h-.01a10.58 10.58 0 0 1-5.39-1.48l-.39-.23-4 1.05 1.07-3.9-.25-.4a10.53 10.53 0 0 1-1.62-5.64c0-5.84 4.75-10.59 10.6-10.59a10.59 10.59 0 0 1 10.58 10.6c0 5.84-4.75 10.59-10.59 10.59Zm5.81-7.93c-.32-.16-1.88-.93-2.17-1.03-.29-.11-.5-.16-.71.16-.21.32-.82 1.03-1 1.24-.19.21-.37.24-.68.08-.32-.16-1.34-.49-2.56-1.58-.95-.84-1.58-1.88-1.77-2.2-.19-.32-.02-.49.14-.65.14-.14.32-.37.48-.56.16-.19.21-.32.32-.53.11-.21.05-.4-.03-.56-.08-.16-.71-1.72-.98-2.35-.26-.62-.52-.54-.71-.55h-.6c-.21 0-.56.08-.85.4-.29.32-1.11 1.09-1.11 2.65s1.14 3.07 1.3 3.29c.16.21 2.24 3.42 5.43 4.8.76.33 1.35.52 1.81.67.76.24 1.45.21 2 .13.61-.09 1.88-.77 2.14-1.51.26-.74.26-1.38.19-1.51-.08-.13-.29-.21-.61-.37Z"/>'
+            '</svg>')
+
+WA_STARTERS = [
+    ("Book a valuation", "I would like to book a valuation."),
+    ("Arrange a viewing", "I would like to arrange a viewing."),
+    ("Mortgage or bridging", "I have a question about a mortgage or bridging finance."),
+    ("Book a survey", "I would like to ask about a RICS survey."),
+]
+
+def whatsapp():
+    num = wa_number()
+    if not num:
+        return ""
+    hours = SITE.get("whatsapp_hours") or SITE.get("opening_hours") or ""
+    opts = "".join(
+        f'<li><button type="button" data-msg="{e(msg)}">{e(label)}</button></li>'
+        for label, msg in WA_STARTERS)
+    hours_line = f'<p class="wa__hours">{e(hours)}</p>' if hours else ""
+    return f'''<div class="wa" id="wa" data-wa="{num}">
+  <div class="wa__panel" id="wa-panel" role="dialog" aria-labelledby="wa-title" hidden>
+    <div class="wa__head">
+      <span class="wa__mark" aria-hidden="true">{mark("wa__markicon")}</span>
+      <span class="wa__who"><span class="wa__title" id="wa-title">{e(SITE["name"])}</span><span class="wa__sub">Answered by the team</span></span>
+      <button class="wa__close" id="wa-close" type="button" aria-label="Close WhatsApp panel">Close</button>
+    </div>
+    <p class="wa__hello">What can we help with? Choose one and WhatsApp opens with the message written for you.</p>
+    <ul class="wa__opts">{opts}</ul>
+    <a class="wa__go" id="wa-go" href="{wa_href()}" target="_blank" rel="noopener">Start a chat instead</a>
+    {hours_line}
+  </div>
+  <button class="wa__fab" id="wa-fab" type="button" aria-expanded="false" aria-controls="wa-panel">
+    <span class="wa__glyph" aria-hidden="true">{WA_GLYPH}</span>
+    <span class="wa__fablabel">WhatsApp</span>
+  </button>
+</div>'''
+
+
 def render(p):
     scripts = '<script src="/assets/site.js" defer></script>' + ('<script src="/assets/home.js" defer></script>' if p.get("home") else "") + p.get("scripts", "")
     body_class = ' class="is-home"' if p.get("home") else ""
@@ -178,6 +222,7 @@ def render(p):
 {p["body"]}
 </main>
 {footer()}
+{whatsapp()}
 {scripts}
 </body>
 </html>

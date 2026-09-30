@@ -299,9 +299,46 @@ a.tile:hover{transform:translateY(-3px);border-color:var(--line-strong)}
 .lost .h1{font-size:clamp(56px,12vw,140px)}
 
 /* ---------- print ---------- */
+/* ---------- WhatsApp corner ---------- */
+/* Sits under the mobile menu (70) and above everything else, so opening the
+   menu covers it rather than trapping a green button over the navigation. */
+.wa{position:fixed;z-index:65;right:clamp(14px,2.2vw,26px);bottom:clamp(14px,2.2vw,26px);display:flex;flex-direction:column;align-items:flex-end;gap:12px;font-family:var(--ui)}
+.wa__fab{display:inline-flex;align-items:center;gap:10px;min-height:52px;padding:0 20px 0 17px;border-radius:999px;cursor:pointer;border:1px solid rgba(37,211,102,.38);background:rgba(11,12,16,.92);color:var(--ivory);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 14px 34px rgba(0,0,0,.45);font:500 12px/1 var(--ui);letter-spacing:.14em;text-transform:uppercase;transition:transform .25s cubic-bezier(.2,.7,.2,1),border-color .25s,background .25s}
+.wa__glyph{display:inline-flex;color:#25D366}
+.wa__fab:hover{transform:translateY(-2px);border-color:#25D366;background:rgba(11,12,16,.98)}
+.wa__fab:focus-visible{outline:2px solid var(--champagne);outline-offset:3px}
+.wa.is-open .wa__fab{border-color:#25D366}
+.wa__panel{width:min(330px,calc(100vw - 28px));padding:18px;border:1px solid var(--line-strong);border-radius:20px;background:rgba(11,12,16,.97);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 26px 70px rgba(0,0,0,.55);transform-origin:bottom right}
+.wa__panel[hidden]{display:none}
+.wa.is-open .wa__panel{animation:wa-in .28s cubic-bezier(.2,.7,.2,1)}
+@keyframes wa-in{from{opacity:0;transform:translateY(10px) scale(.96)}to{opacity:1;transform:none}}
+.wa__head{display:flex;align-items:center;gap:11px}
+.wa__markicon{width:30px;height:30px;flex:none}
+.wa__markicon .mk-rule{color:var(--champagne)}
+.wa__markicon .mk-letter{color:var(--ivory)}
+.wa__who{display:flex;flex-direction:column;gap:3px;min-width:0}
+.wa__title{font-family:var(--display);font-weight:600;font-size:17px;line-height:1;color:var(--ivory)}
+.wa__sub{font:400 11px/1.3 var(--ui);color:var(--stone)}
+.wa__close{margin-left:auto;background:none;border:1px solid var(--line);color:var(--stone);border-radius:999px;min-height:30px;padding:0 11px;cursor:pointer;font:500 10px/1 var(--ui);letter-spacing:.14em;text-transform:uppercase}
+.wa__close:hover{color:var(--ivory);border-color:var(--line-strong)}
+.wa__hello{margin:14px 0 12px;font:400 13px/1.5 var(--ui);color:var(--stone)}
+.wa__opts{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px}
+.wa__opts button{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:42px;padding:0 14px;cursor:pointer;text-align:left;border:1px solid var(--line);border-radius:12px;background:rgba(243,238,228,.03);color:var(--ivory);font:500 13px/1.3 var(--ui);transition:border-color .2s,background .2s,transform .2s}
+.wa__opts button::after{content:"";width:7px;height:7px;flex:none;border-right:1.5px solid var(--champagne);border-top:1.5px solid var(--champagne);transform:rotate(45deg)}
+.wa__opts button:hover{border-color:var(--champagne);background:rgba(233,214,174,.09);transform:translateX(2px)}
+.wa__opts button:focus-visible{outline:2px solid var(--champagne);outline-offset:2px}
+.wa__go{display:block;margin:13px 0 0;color:var(--champagne);font:500 12px/1 var(--ui);letter-spacing:.06em;text-decoration:none;border-bottom:1px solid rgba(233,214,174,.35);padding-bottom:4px;width:max-content}
+.wa__go:hover{border-bottom-color:var(--champagne)}
+.wa__hours{margin:13px 0 0;font:400 11px/1.4 var(--ui);color:var(--stone);opacity:.8}
+@media (max-width:560px){
+  .wa__fablabel{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .wa__fab{min-height:54px;width:54px;padding:0;justify-content:center;border-radius:50%}
+}
+@media (prefers-reduced-motion:reduce){.wa.is-open .wa__panel{animation:none}.wa__fab:hover{transform:none}}
+
 @media print{
   body{background:#fff;color:#000}
-  .hdr,.ftr,.menu,.skip,.band,.phero__img,.phero__pic,.phero::after{display:none!important}
+  .hdr,.ftr,.menu,.skip,.band,.phero__img,.phero__pic,.phero::after,.wa{display:none!important}
   .brand--print{display:flex;align-items:center;gap:10px;margin:0 0 20px;padding-bottom:12px;border-bottom:1px solid #ccc;color:#000;font-family:var(--display);font-weight:600;font-size:20px}
   .brand--print .mk-rule{color:#8A6B4E}
   .brand--print .mk-letter{color:#000}
